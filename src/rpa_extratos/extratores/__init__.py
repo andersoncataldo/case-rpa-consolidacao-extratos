@@ -56,4 +56,10 @@ def _resolver_extrator(layout: str) -> ExtratorBase | None:
     if layout == "excel_cabecalho":
         from .excel_cabecalho import extrair
         return extrair
+    if layout == "pdf_tipo_a":
+        from .pdf_tipo_a import extrair
+        return extrair
+    if layout == "pdf_tipo_b":
+        from .pdf_tipo_b import extrair
+        return extrair
     return None
