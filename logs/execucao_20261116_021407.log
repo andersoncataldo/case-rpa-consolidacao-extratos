@@ -1,0 +1,35 @@
+=== EXECUÇÃO RPA EXTRATOS ===
+Início: 2026-11-16 02:14:07   Versão: 1.0.0   Host: DESKTOP-BL76ITE
+Pasta de entrada: entrada   Período do lote: 2026-10
+Arquivos encontrados: 17 (PDF 7 | Imagem 5 | Excel 5)
+
+[OK]       app_ipe_amarelo_1011.png             Banco Aurora     34930-3     2026-10   R$ 271.350,74    (gemini-visao:gemini-3.5-flash-lite, 7.24s, sha256:07a6056c7b20)
+[OK]       app_riacho_fundo_1011.png            Banco Horizonte  87458-3     2026-10   R$ 387.257,55    (gemini-visao:gemini-3.5-flash, 31.70s, sha256:1833d4b6e091)
+[OK]       app_umburana_1011.png                Banco Cerrado    90683-2     2026-10   R$ 497.889,23    (gemini-visao:gemini-3.6-flash, 12.92s, sha256:63699729c673)
+[FALHOU]   aviso_agencia_horizonte.pdf          —                —           —         —                (pdfplumber:nao_extrato, 0.08s, sha256:4ffc339d5a75)
+           ↳ Documento não é um extrato bancário
+[OK]       cajueiro_solar_extrato_10-2026.xlsx  Banco Horizonte  18844-6     2026-10   R$ 175.138,64    (openpyxl:cabecalho, 0.01s, sha256:32a27cb93d97)
+           ↳ Saldo ficou negativo durante o período (mín. R$ -46.643,80) após pagamento atípico de R$ 234.602,13 (PAGTO FORNECEDOR - SUBSTITUICAO INVERSORES); saldo final fechou positivo
+[OK]       captura_facheiro_out.png             Banco Planalto   96828-1     2026-10   R$ 475.966,91    (gemini-visao:gemini-3.5-flash-lite, 12.68s, sha256:a86f76240e5c)
+[OK]       CARNAUBA_I_outubro.pdf               Banco Planalto   69294-8     2026-10   R$ 298.409,32    (pdfplumber:tipo_a, 0.13s, sha256:e9d59f1c25d1)
+[REVISAR]  EXT_102026_LagoaAzul (1).pdf         Banco Horizonte  70431-9     2026-10   R$ 308.924,49    (pdfplumber:tipo_b, 0.11s, sha256:397a07776655)
+           ↳ Arquivo em duplicata (mesmo hash SHA-256 de EXT_102026_LagoaAzul.pdf)
+[OK]       EXT_102026_LagoaAzul.pdf             Banco Horizonte  70431-9     2026-10   R$ 308.924,49    (pdfplumber:tipo_b, 0.15s, sha256:397a07776655)
+[OK]       EXT_CHAPADA_VERDE_102026.pdf         Banco Cerrado    72359-9     2026-10   R$ 397.981,91    (pdfplumber:tipo_b, 0.11s, sha256:1fc14faaa141)
+[OK]       extrato_barauna_ii_out2026.pdf       Banco Litoral    21884-8     2026-10   R$ 386.502,31    (pdfplumber:tipo_a, 0.12s, sha256:4b7f3b0891ec)
+[OK]       extrato_mororo_iii_10-2026.xlsx      Banco Aurora     62091-6     2026-10   R$ 435.596,81    (openpyxl:cabecalho, 0.01s, sha256:9342d01c6888)
+[REVISAR]  extrato_sol_do_sertao_I_out2026.pdf  Banco Aurora     31827-4     2026-10   R$ 457.179,12    (pdfplumber:tipo_a, 0.12s, sha256:4994ffb60fcf)
+           ↳ Divergência na reconciliação: saldo final declarado R$ 457.179,12 difere do saldo calculado R$ 456.099,12 (diferença de R$ 1.080,00)
+[OK]       JANDAIRA_extrato_outubro.xlsx        Banco Planalto   43291-5     2026-10   R$ 276.394,02    (openpyxl:aba_controle, 0.01s, sha256:a12fbe51429b)
+[OK]       JATOBA_II_extrato_outubro.xlsx       Banco Litoral    12213-0     2026-10   R$ 285.950,28    (openpyxl:aba_controle, 0.01s, sha256:f6dd63b10329)
+[OK]       pau_ferro_out26.xlsx                 Banco Cerrado    83812-1     2026-10   R$ 225.934,57    (openpyxl:cabecalho, 0.01s, sha256:967d1d5ff157)
+[REVISAR]  print_serra_dourada_II.png           Banco Litoral    9913355-2   2026-09   R$ 243.032,29    (gemini-visao:gemini-3.5-flash-lite, 7.26s, sha256:a085155bbbcc)
+           ↳ Período 2026-09 diferente do esperado do lote (2026-10); Conta 9913355-2 fora do padrão esperado (5 dígitos + DV)
+
+=== RESUMO ===
+Processados: 17 | ok: 13 | revisar: 3 | falhou: 1
+Contas esperadas ausentes: nenhuma configurada/ausente
+Duplicidades: EXT_102026_LagoaAzul (1).pdf ≡ EXT_102026_LagoaAzul.pdf (hash 397a07776655)
+Chamadas de IA: 5 | Tokens: 14746 (entrada=8077, saída=6669) | Custo estimado: US$ 0.031067
+Duração total: 00:01:13 (72.70s)
+Saída: saida\consolidado_2026-10.xlsx

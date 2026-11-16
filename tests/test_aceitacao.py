@@ -64,8 +64,8 @@ def test_aceitacao_deterministica_pdf_e_excel(tmp_path: Path, monkeypatch: pytes
         pytest.skip("Pasta entrada/ não encontrada; rode scripts/preparar_entrada.py")
 
     # Garante execução isolada sem depender de chamada de IA neste teste determinístico
-    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    cfg = carregar_config(RAIZ / "config.yaml")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    cfg = carregar_config(RAIZ / "config.yaml", carregar_env=False)
     cfg.modelo_planilha = RAIZ / "modelo" / "modelo_consolidado_extratos.xlsx"
 
     saida_dir = tmp_path / "saida"

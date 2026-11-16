@@ -85,7 +85,16 @@ def _normalizar_nome_modelo(nome: str) -> str:
     return nome.removeprefix("models/").strip()
 
 
+def _eh_erro_cota_diaria(exc: BaseException) -> bool:
+    if isinstance(exc, errors.APIError) and exc.code == 429:
+        msg = str(exc)
+        return "PerDay" in msg or "RESOURCE_EXHAUSTED" in msg
+    return False
+
+
 def _eh_erro_transitorio(exc: BaseException) -> bool:
+    if _eh_erro_cota_diaria(exc):
+        return False
     if isinstance(exc, errors.APIError):
         return exc.code in {408, 429, 500, 502, 503, 504}
     return isinstance(exc, (TimeoutError, ConnectionError, OSError))
@@ -140,10 +149,16 @@ def _chamar_gemini_com_retry(
     partes_imagem: list[types.Part],
     config: AppConfig,
 ) -> types.GenerateContentResponse:
+    thinking_cfg = None
+    nivel = getattr(config.gemini, "thinking_level", "").strip().upper()
+    if nivel and hasattr(types.ThinkingLevel, nivel):
+        thinking_cfg = types.ThinkingConfig(thinking_level=getattr(types.ThinkingLevel, nivel))
+
     cfg = types.GenerateContentConfig(
         temperature=config.gemini.temperatura,
         response_mime_type="application/json",
         response_json_schema=ExtratoImagemSchema.model_json_schema(),
+        thinking_config=thinking_cfg,
     )
 
     @retry(
@@ -186,7 +201,10 @@ def extrair(
     else:
         client = genai.Client(
             api_key=api_key,
-            http_options=types.HttpOptions(timeout=timeout_ms),
+            http_options=types.HttpOptions(
+                timeout=timeout_ms,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
         )
 
     modelo_cfg = _normalizar_nome_modelo(config.gemini.modelo)
@@ -218,6 +236,13 @@ def extrair(
             metodo=f"gemini-visao:{modelo_cfg}",
         )
 
+    modelos_candidatos = [modelo_cfg]
+    for fb in config.gemini.modelos_fallback:
+        fb_norm = _normalizar_nome_modelo(fb)
+        if fb_norm and fb_norm not in modelos_candidatos:
+            if not modelos_disponiveis or fb_norm in modelos_disponiveis:
+                modelos_candidatos.append(fb_norm)
+
     if tipo.layout == "pdf_escaneado":
         imagens_bytes = _rasterizar_pdf_para_pngs(arquivo.caminho)
         partes = [types.Part.from_bytes(data=img, mime_type="image/png") for img in imagens_bytes]
@@ -229,20 +254,45 @@ def extrair(
             )
         ]
 
-    try:
-        response = _chamar_gemini_com_retry(client, modelo_cfg, partes, config)
-    except Exception as exc:
+    response = None
+    modelo_usado = modelo_cfg
+    ultimo_erro: Exception | None = None
+    for idx_mod, candidato in enumerate(modelos_candidatos):
+        try:
+            response = _chamar_gemini_com_retry(client, candidato, partes, config)
+            modelo_usado = candidato
+            break
+        except Exception as exc:
+            ultimo_erro = exc
+            # Só tenta modelo fallback se o erro for cota/timeout/servidor no modelo anterior
+            eh_elegivel_fallback = (
+                _eh_erro_cota_diaria(exc)
+                or _eh_erro_transitorio(exc)
+                or "Timeout" in type(exc).__name__
+            )
+            if not eh_elegivel_fallback or idx_mod == len(modelos_candidatos) - 1:
+                return ResultadoExtracao.falha(
+                    arquivo.caminho,
+                    f"Falha na chamada à API Gemini após retries: {type(exc).__name__}: {exc}",
+                    hash_sha256=arquivo.hash_sha256,
+                    formato=tipo.formato,
+                    metodo=f"gemini-visao:{candidato}",
+                )
+
+    if response is None:
         return ResultadoExtracao.falha(
             arquivo.caminho,
-            f"Falha na chamada à API Gemini após retries: {type(exc).__name__}: {exc}",
+            f"Falha na chamada à API Gemini: {ultimo_erro}",
             hash_sha256=arquivo.hash_sha256,
             formato=tipo.formato,
-            metodo=f"gemini-visao:{modelo_cfg}",
+            metodo=f"gemini-visao:{modelo_usado}",
         )
 
     usage = getattr(response, "usage_metadata", None)
     tokens_in = int(getattr(usage, "prompt_token_count", 0) or 0)
-    tokens_out = int(getattr(usage, "candidates_token_count", 0) or 0)
+    tokens_cand = int(getattr(usage, "candidates_token_count", 0) or 0)
+    tokens_think = int(getattr(usage, "thoughts_token_count", 0) or 0)
+    tokens_out = tokens_cand + tokens_think
     tokens_tot = int(getattr(usage, "total_token_count", 0) or (tokens_in + tokens_out))
 
     texto_json = getattr(response, "text", None) or ""
@@ -254,7 +304,7 @@ def extrair(
             f"Resposta inválida da API Gemini fora do schema esperado: {type(exc).__name__}: {exc}",
             hash_sha256=arquivo.hash_sha256,
             formato=tipo.formato,
-            metodo=f"gemini-visao:{modelo_cfg}",
+            metodo=f"gemini-visao:{modelo_usado}",
         )
         res_err.chamadas_ia = 1
         res_err.tokens_entrada = tokens_in
@@ -291,7 +341,7 @@ def extrair(
         movimentos=movimentos,
         moeda=(dados.moeda or "BRL").strip().upper(),
         confianca_ia=dados.confianca,
-        metodo=f"gemini-visao:{modelo_cfg}",
+        metodo=f"gemini-visao:{modelo_usado}",
         chamadas_ia=1,
         tokens_entrada=tokens_in,
         tokens_saida=tokens_out,

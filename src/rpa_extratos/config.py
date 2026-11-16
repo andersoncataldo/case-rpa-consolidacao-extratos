@@ -27,15 +27,16 @@ def _carregar_yaml(texto: str) -> dict[str, Any]:
 class GeminiConfig:
     """Parâmetros de chamada da API Google Gemini."""
 
-    modelo: str = "gemini-3.8-flash"
+    modelo: str = "gemini-3.5-flash"
     modelos_fallback: list[str] = field(
-        default_factory=lambda: ["gemini-3.8-flash", "gemini-3.5-flash-lite"]
+        default_factory=lambda: ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite"]
     )
     temperatura: float = 0.0
-    timeout_segundos: int = 60
-    max_tentativas: int = 3
-    custo_por_1m_entrada_usd: float = 0.30
-    custo_por_1m_saida_usd: float = 2.50
+    thinking_level: str = "LOW"
+    timeout_segundos: int = 90
+    max_tentativas: int = 2
+    custo_por_1m_entrada_usd: float = 0.75
+    custo_por_1m_saida_usd: float = 3.75
 
 
 @dataclass
@@ -67,10 +68,17 @@ class AppConfig:
     contas_esperadas: list[str] = field(default_factory=list)
 
 
-def carregar_config(caminho_yaml: Path | None = None) -> AppConfig:
+def carregar_config(
+    caminho_yaml: Path | None = None,
+    *,
+    carregar_env: bool = True,
+) -> AppConfig:
     """Carrega ``.env`` e ``config.yaml`` com valores padrão seguros."""
-    load_dotenv()
     raiz = Path.cwd()
+    if carregar_env:
+        dotenv_path = raiz / ".env"
+        if dotenv_path.exists():
+            load_dotenv(dotenv_path)
     yaml_path = caminho_yaml or (raiz / "config.yaml")
     dados: dict[str, Any] = {}
     if yaml_path.exists():
@@ -83,13 +91,16 @@ def carregar_config(caminho_yaml: Path | None = None) -> AppConfig:
     rot = dados.get("rotulos", {})
 
     gemini_cfg = GeminiConfig(
-        modelo=str(gem.get("modelo", "gemini-3.8-flash")),
-        modelos_fallback=list(gem.get("modelos_fallback", ["gemini-3.8-flash", "gemini-3.5-flash-lite"])),
+        modelo=str(gem.get("modelo", "gemini-3.5-flash")),
+        modelos_fallback=list(
+            gem.get("modelos_fallback", ["gemini-3.5-flash", "gemini-3.6-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite"])
+        ),
         temperatura=float(gem.get("temperatura", 0.0)),
-        timeout_segundos=int(gem.get("timeout_segundos", 60)),
-        max_tentativas=int(gem.get("max_tentativas", 3)),
-        custo_por_1m_entrada_usd=float(gem.get("custo_por_1m_entrada_usd", 0.30)),
-        custo_por_1m_saida_usd=float(gem.get("custo_por_1m_saida_usd", 2.50)),
+        thinking_level=str(gem.get("thinking_level", "LOW")).upper(),
+        timeout_segundos=int(gem.get("timeout_segundos", 90)),
+        max_tentativas=int(gem.get("max_tentativas", 2)),
+        custo_por_1m_entrada_usd=float(gem.get("custo_por_1m_entrada_usd", 0.75)),
+        custo_por_1m_saida_usd=float(gem.get("custo_por_1m_saida_usd", 3.75)),
     )
 
     val_cfg = ValidacaoConfig(

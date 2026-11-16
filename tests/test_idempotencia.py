@@ -38,8 +38,8 @@ def test_execucoes_consecutivas_sao_idempotentes(tmp_path: Path, monkeypatch: py
     if not ENTRADA_DIR.exists():
         pytest.skip("Pasta entrada/ não encontrada")
 
-    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    cfg = carregar_config(RAIZ / "config.yaml")
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    cfg = carregar_config(RAIZ / "config.yaml", carregar_env=False)
     cfg.modelo_planilha = RAIZ / "modelo" / "modelo_consolidado_extratos.xlsx"
 
     _, planilha_1, _, _ = executar_pipeline(ENTRADA_DIR, tmp_path / "saida1", tmp_path / "logs1", cfg)

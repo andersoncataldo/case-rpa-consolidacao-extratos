@@ -27,14 +27,14 @@ Premissas base para o fechamento mensal de **17 contas** (7 PDF + 5 PNG + 5 XLSX
 
 | Etapa | Processo Manual | Processo Automatizado |
 |---|---|---|
-| Leitura e digitação por arquivo | 12 PDF/PNG × 8 min + 5 XLSX × 4 min = **116 min** | Execução ponta a ponta: **< 1 min** (lote completo) |
+| Leitura e digitação por arquivo | 12 PDF/PNG × 8 min + 5 XLSX × 4 min = **116 min** | Execução ponta a ponta medida: **1,2 min** (72,7 s para 17 arquivos) |
 | Formatação da planilha e conferência | **30 min** | Gerada pronta no modelo: **0 min** |
 | Retrabalho por erro de digitação/conferência | 1 correção/mês × 20 min = **20 min** | Revisão humana apenas dos alertas (`revisar`/`falhou`): 4 × 5 min = **20 min** |
-| **Total mensal** | **166 min (≈ 2,77 h/mês)** | **≈ 21 min (≈ 0,35 h/mês)** |
+| **Total mensal** | **166 min (≈ 2,77 h/mês)** | **≈ 21,2 min (≈ 0,35 h/mês)** |
 
-- **Ganho líquido mensal (17 contas):** `166 − 21 = 145 min ≈ 2,4 h/mês` (**87% de redução de tempo**).
-- **Escala:** o ganho cresce linearmente com o portfólio de usinas — em **100 contas/mês**, o esforço manual saltaria para **≈ 14,5 h/mês**, enquanto a automação mantém o tempo operacional focado apenas nas exceções (**≈ 1,5 h/mês**), economizando **≈ 13 h/mês** e eliminando erros de digitação com trilha de auditoria SHA-256.
-- **Custo de API:** apenas 5 imagens vão ao Gemini por lote (custo na faixa de frações de centavo de dólar por mês, desprezível frente à hora técnica economizada). *(Atualizado com medições exatas após execução ao vivo.)*
+- **Ganho líquido mensal (17 contas):** `166 − 21,2 = 144,8 min ≈ 2,4 h/mês` (**87% de redução de tempo**).
+- **Escala:** o ganho cresce linearmente com o portfólio de usinas — em **100 contas/mês**, o esforço manual saltaria para **≈ 14,5 h/mês**, enquanto a automação executa em poucos minutos e restringe o esforço humano às exceções (**≈ 1,5 h/mês**), economizando **≈ 13 h/mês** com trilha de auditoria SHA-256.
+- **Custo medido de API (execução real):** **5 chamadas** (`gemini-3.5-flash` com fallback `gemini-3.6-flash` / `gemini-3.5-flash-lite`), **14.746 tokens** (`8.077` entrada + `6.669` saída/thinking), custo estimado de **US$ 0,031 por lote** (desprezível frente à hora técnica economizada). *(Os 12 PDFs/XLSX custam US$ 0,00 por serem 100% determinísticos em < 1 s.)*
 
 ## 4. Próximos Passos (Prioridade)
 
