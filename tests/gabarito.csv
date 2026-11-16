@@ -1,0 +1,18 @@
+arquivo,banco,conta,periodo,saldo_final,formato,status
+CARNAUBA_I_outubro.pdf,Banco Planalto,69294-8,2026-10,298409.32,PDF,ok
+EXT_102026_LagoaAzul.pdf,Banco Horizonte,70431-9,2026-10,308924.49,PDF,ok
+EXT_102026_LagoaAzul (1).pdf,Banco Horizonte,70431-9,2026-10,308924.49,PDF,revisar
+EXT_CHAPADA_VERDE_102026.pdf,Banco Cerrado,72359-9,2026-10,397981.91,PDF,ok
+extrato_barauna_ii_out2026.pdf,Banco Litoral,21884-8,2026-10,386502.31,PDF,ok
+extrato_sol_do_sertao_I_out2026.pdf,Banco Aurora,31827-4,2026-10,457179.12,PDF,revisar
+aviso_agencia_horizonte.pdf,,,,,PDF,falhou
+JANDAIRA_extrato_outubro.xlsx,Banco Planalto,43291-5,2026-10,276394.02,Excel,ok
+JATOBA_II_extrato_outubro.xlsx,Banco Litoral,12213-0,2026-10,285950.28,Excel,ok
+cajueiro_solar_extrato_10-2026.xlsx,Banco Horizonte,18844-6,2026-10,175138.64,Excel,ok
+extrato_mororo_iii_10-2026.xlsx,Banco Aurora,62091-6,2026-10,435596.81,Excel,ok
+pau_ferro_out26.xlsx,Banco Cerrado,83812-1,2026-10,225934.57,Excel,ok
+app_ipe_amarelo_1011.png,Banco Aurora,34930-3,2026-10,271350.74,Imagem,ok
+app_riacho_fundo_1011.png,Banco Horizonte,87458-3,2026-10,387257.55,Imagem,ok
+app_umburana_1011.png,Banco Cerrado,90683-2,2026-10,497889.23,Imagem,ok
+captura_facheiro_out.png,Banco Planalto,96828-1,2026-10,475966.91,Imagem,ok
+print_serra_dourada_II.png,Banco Litoral,9913355-2,2026-09,243032.29,Imagem,revisar
