@@ -117,3 +117,27 @@ def test_nao_extrato_vira_falhou() -> None:
     validar_lote([r], AppConfig())
     assert r.status == "falhou"
     assert "não é um extrato bancário" in r.observacao_texto.lower()
+
+
+def test_extrato_sem_movimentos_com_variacao_de_saldo_vira_revisar() -> None:
+    r = _resultado_base(
+        "sem_mov.pdf",
+        saldo_inicial=Decimal("1000.00"),
+        saldo_final=Decimal("1500.00"),
+    )
+    r.movimentos = []
+    validar_lote([r], AppConfig())
+    assert r.status == "revisar"
+    assert "ausência de lançamentos" in r.observacao_texto.lower()
+
+
+def test_duplicidade_logica_mesma_conta_periodo_hashes_diferentes() -> None:
+    pdf_orig = _resultado_base("conta_123.pdf", hash_sha256="hash_pdf")
+    xlsx_dup = _resultado_base("conta_123_copia.xlsx", hash_sha256="hash_xlsx")
+    xlsx_dup.formato = "Excel"
+
+    meta = validar_lote([xlsx_dup, pdf_orig], AppConfig())
+    assert pdf_orig.status == "ok"
+    assert xlsx_dup.status == "revisar"
+    assert "duplicados" in xlsx_dup.observacao_texto.lower()
+    assert len(meta["duplicidades"]) == 1  # type: ignore[arg-type]

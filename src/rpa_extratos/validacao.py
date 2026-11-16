@@ -32,6 +32,15 @@ def _chave_prioridade_original(resultado: ResultadoExtracao) -> tuple[bool, int,
 def _reconciliar_extrato(resultado: ResultadoExtracao, tolerancia: Decimal) -> None:
     """Verifica a consistência aritmética entre saldo inicial, lançamentos e saldo final."""
     if not resultado.movimentos:
+        if (
+            resultado.saldo_inicial is not None
+            and resultado.saldo_final is not None
+            and abs(resultado.saldo_final - resultado.saldo_inicial) > tolerancia
+        ):
+            resultado.adicionar_observacao(
+                "revisar",
+                "Ausência de lançamentos para reconciliar a variação entre saldo inicial e saldo final",
+            )
         return
 
     soma_movimentos = sum((m.valor for m in resultado.movimentos), Decimal("0.00"))
@@ -228,6 +237,25 @@ def validar_lote(resultados: list[ResultadoExtracao], config: AppConfig) -> dict
                 f"Arquivo em duplicata (mesmo hash SHA-256 de {original.arquivo})",
             )
             duplicidades.append(f"{copia.arquivo} ≡ {original.arquivo} (hash {hash_hex[:12]})")
+
+    # 2b. Detecção de duplicidade lógica (mesmo banco, conta e período com hashes diferentes)
+    grupos_chave: dict[tuple[str, str, str], list[ResultadoExtracao]] = defaultdict(list)
+    for r in resultados:
+        if r.banco and r.conta and r.periodo and not r.nao_e_extrato:
+            grupos_chave[(r.banco.lower(), r.conta, r.periodo)].append(r)
+
+    for grupo in grupos_chave.values():
+        if len(grupo) < 2:
+            continue
+        grupo_ordenado = sorted(grupo, key=_chave_prioridade_original)
+        primeiro = grupo_ordenado[0]
+        for outro in grupo_ordenado[1:]:
+            if outro.hash_sha256 != primeiro.hash_sha256:
+                outro.adicionar_observacao(
+                    "revisar",
+                    f"Conta {outro.conta} e período {outro.periodo} duplicados em outro arquivo ({primeiro.arquivo})",
+                )
+                duplicidades.append(f"{outro.arquivo} ≡ {primeiro.arquivo} (mesma conta/período)")
 
     # 3. Alertas informativos para extratos 'ok' com eventos atípicos no mês
     for r in resultados:

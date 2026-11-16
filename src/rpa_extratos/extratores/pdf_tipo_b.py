@@ -1,4 +1,4 @@
-"""Extrator determinístico para PDFs Layout B (Horizonte, Cerrado)."""
+"""Extrator determinístico para PDFs Layout B (colunas Crédito/Débito/Saldo e bloco Resumo do período)."""
 
 from __future__ import annotations
 

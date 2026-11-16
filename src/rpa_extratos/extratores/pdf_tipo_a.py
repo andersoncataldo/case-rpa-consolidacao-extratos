@@ -1,4 +1,4 @@
-"""Extrator determinístico para PDFs Layout A (Planalto, Litoral, Aurora)."""
+"""Extrator determinístico para PDFs Layout A (colunas Valor/Saldo com sufixo C/D)."""
 
 from __future__ import annotations
 

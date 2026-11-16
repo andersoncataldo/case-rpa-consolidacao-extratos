@@ -28,9 +28,9 @@ PROMPT_EXTRACAO_IMAGEM = """Você é um especialista em leitura precisa de extra
 
 Analise a imagem do extrato bancário em resolução original e extraia os dados estruturados com rigor absoluto:
 1. "banco": nome do banco exibido no topo da tela.
-2. "conta": número completo da conta exatamente como aparece, preservando todos os dígitos e o hífen (ex.: "12345-6" ou "9913355-2").
-3. "periodo": período de referência do extrato no formato "AAAA-MM" (ex.: "2026-10" ou "2026-09"). Observe o cabeçalho de período e os meses abreviados dos lançamentos (ex.: "set" = 09, "out" = 10).
-4. "saldo_inicial": o saldo inicial/anterior exibido no topo ou canto do extrato, em texto numérico exato (ex.: "105634.26" ou "105.634,26").
+2. "conta": número completo da conta exatamente como aparece, preservando todos os dígitos e o hífen (ex.: "12345-6" ou "1234567-8").
+3. "periodo": período de referência do extrato no formato "AAAA-MM" (ex.: "2025-03" ou "2025-02"). Observe o cabeçalho de período e os meses abreviados dos lançamentos (ex.: "set" = 09, "out" = 10).
+4. "saldo_inicial": o saldo inicial/anterior exibido no topo ou canto do extrato, em texto numérico exato (ex.: "10000.00" ou "10.000,00").
 5. "saldo_final": o SALDO FINAL exibido no cartão principal do topo ("Saldo final R$ ..."), NUNCA o saldo de um lançamento isolado da lista.
 6. "moeda": código ISO da moeda (padrão "BRL").
 7. "lancamentos": TODOS os lançamentos visíveis na lista, na ordem em que aparecem de cima para baixo, informando para cada linha:

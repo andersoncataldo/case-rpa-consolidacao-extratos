@@ -197,7 +197,7 @@ def normalizar_periodo(texto: Any) -> str | None:
         if 1 <= mes <= 12:
             return f"{m.group(2)}-{mes:02d}"
 
-    # Mês por extenso ou abreviado com ano (ex.: "outubro de 2026", "01 set a 30 set 2026", "out/2026")
+    # Mês por extenso ou abreviado com ano (ex.: "outubro de 2025", "01 set a 30 set 2025", "out/2025")
     sem_acento = remover_acentos(s.lower())
     m_ano = re.search(r"\b(20\d{2})\b", sem_acento)
     if m_ano:
