@@ -1,0 +1,35 @@
+pastas:
+  entrada: "entrada"
+  saida: "saida"
+  logs: "logs"
+  modelo_planilha: "modelo/modelo_consolidado_extratos.xlsx"
+
+gemini:
+  modelo: "gemini-3.8-flash"
+  modelos_fallback:
+    - "gemini-3.8-flash"
+    - "gemini-3.5-flash-lite"
+  temperatura: 0.0
+  timeout_segundos: 60
+  max_tentativas: 3
+  custo_por_1m_entrada_usd: 0.30
+  custo_por_1m_saida_usd: 2.50
+
+validacao:
+  tolerancia_reconciliacao: "0.01"
+  padrao_conta_regex: "^\\d{5}-\\d$"
+  multiplicador_lancamento_atipico: 10.0
+
+execucao:
+  codigo_saida_erro_em_falha: false
+
+rotulos:
+  saldo_final:
+    - "saldo final"
+    - "saldo em 31/"
+    - "saldo em 30/"
+    - "saldo atual"
+  saldo_inicial:
+    - "saldo anterior"
+    - "saldo inicial"
+    - "saldo_inicial"
