@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rpa-extratos"
+version = "1.0.0"
+description = "Automação RPA para consolidação de saldos finais de extratos bancários"
+requires-python = ">=3.11"
+dependencies = [
+    "openpyxl>=3.1.0",
+    "pdfplumber>=0.11.0",
+    "google-genai>=2.30.1",
+    "pydantic>=2.7.0",
+    "python-dotenv>=1.0.0",
+    "tenacity>=8.2.0",
+    "ruamel.yaml>=0.18.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+    "gemini: testes que executam chamadas reais à API do Google Gemini",
+]

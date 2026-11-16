@@ -1,0 +1,26 @@
+# Segredos locais
+.env
+
+# Ambientes virtuais Python
+.venv/
+venv/
+.venv_limpo/
+env/
+
+# Caches e artefatos de compilação Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Arquivos temporários / sistema operacional
+~$*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Pasta de entrada extraída localmente (derivada do zip)
+entrada/
