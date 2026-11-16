@@ -62,4 +62,7 @@ def _resolver_extrator(layout: str) -> ExtratorBase | None:
     if layout == "pdf_tipo_b":
         from .pdf_tipo_b import extrair
         return extrair
+    if layout in {"imagem_visao", "pdf_escaneado"}:
+        from .visao_gemini import extrair
+        return extrair
     return None
