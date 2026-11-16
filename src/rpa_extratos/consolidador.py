@@ -80,6 +80,7 @@ def gerar_planilha(
 
             c_conta.alignment = Alignment(horizontal="left", vertical="center")
             c_periodo.alignment = Alignment(horizontal="center", vertical="center")
+            c_saldo.alignment = Alignment(horizontal="right", vertical="center")
             c_formato.alignment = Alignment(horizontal="center", vertical="center")
             c_obs.alignment = Alignment(wrap_text=True, vertical="center")
 
@@ -94,6 +95,8 @@ def gerar_planilha(
         ws.freeze_panes = "A2"
         ultima_linha = max(len(ordenados) + 1, 1)
         ws.auto_filter.ref = f"A1:H{ultima_linha}"
+        if wb.properties.created is not None:
+            wb.properties.modified = wb.properties.created
 
         wb.save(destino)
     finally:
