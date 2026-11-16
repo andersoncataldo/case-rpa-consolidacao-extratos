@@ -6,3 +6,4 @@ python-dotenv>=1.0.0
 tenacity>=8.2.0
 ruamel.yaml>=0.18.0
 pytest>=8.0.0
+setuptools>=68.0
