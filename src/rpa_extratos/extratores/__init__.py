@@ -49,5 +49,11 @@ def extrair_documento(
     return extrator(arquivo, tipo, config)
 
 
-def _resolver_extrator(layout: str) -> ExtratorBase | None:  # type: ignore[return-value]
+def _resolver_extrator(layout: str) -> ExtratorBase | None:
+    if layout == "excel_aba_controle":
+        from .excel_aba_controle import extrair
+        return extrair
+    if layout == "excel_cabecalho":
+        from .excel_cabecalho import extrair
+        return extrair
     return None
