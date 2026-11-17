@@ -7,3 +7,8 @@ tenacity>=8.2.0
 ruamel.yaml>=0.18.0
 pytest>=8.0.0
 setuptools>=68.0
+
+# Painel visual (bonus)
+streamlit>=1.50.0
+pandas>=2.2.0
+pypdfium2>=4.30.0

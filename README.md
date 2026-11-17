@@ -49,6 +49,25 @@ O modelo padrão, tolerância de reconciliação e rótulos ficam em `config.yam
    - `saida/consolidado_AAAA-MM.xlsx`
    - `logs/execucao_YYYYMMDD_HHMMSS.log` e `.json` (`logs/ultima_execucao.*`)
 
+## Painel Visual (Bônus — Streamlit)
+
+Para apresentar o percurso completo da automação de forma interativa:
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+O painel exibe:
+- **Percurso da automação em tempo real**: diagrama visual com as 5 etapas (`Descoberta → Classificação → Extração → Validação → Consolidação`) acendendo conforme os arquivos são processados.
+- **Dois modos de execução**:
+  - **Demonstração**: processa PDFs e Excels de verdade e reaproveita as respostas do Gemini salvas em `demo/cache_gemini.json` para os prints de app (instantâneo, sem chave e sem custo).
+  - **Ao vivo**: executa o pipeline 100% real incluindo chamadas à API do Google Gemini.
+- **Lote do case ou upload**: usa os 17 arquivos do case (extraindo `extratos_ufv_out2026.zip` automaticamente se `entrada/` não existir) ou permite enviar novos arquivos pela interface.
+- **Rastreio individual por arquivo**: documento original lado a lado com os dados extraídos, reconciliação aritmética detalhada (`saldo inicial + créditos − débitos = saldo final`) e evolução do saldo.
+- **Ganho de negócio (ROI)** e **download** da planilha consolidada (`.xlsx`) e dos logs (`.log` / `.json`).
+
+Para publicar gratuitamente no **Streamlit Community Cloud**, basta apontar para este repositório no [share.streamlit.io](https://share.streamlit.io) com o arquivo principal `app/streamlit_app.py` (opcionalmente adicionando `GEMINI_API_KEY` em *Secrets* para habilitar o modo *Ao vivo* na nuvem).
+
 ## Testes
 
 ```bash

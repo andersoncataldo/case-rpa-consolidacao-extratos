@@ -28,3 +28,4 @@ entrada/
 # Documentos internos de preparação do case (não enviar ao repositório público)
 PROMPT_ANTIGRAVITY_rpa_extratos.md
 GUIA_CASE_RPA_consolidacao_saldos.md
+*.xml

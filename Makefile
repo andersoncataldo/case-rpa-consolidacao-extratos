@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: instalar preparar rodar testar testar-gemini limpar
+.PHONY: instalar preparar rodar painel testar testar-gemini limpar
 
 instalar:
 	$(PYTHON) -m pip install -r requirements.txt
@@ -11,6 +11,9 @@ preparar:
 
 rodar:
 	$(PYTHON) -m rpa_extratos --entrada entrada --saida saida --logs logs
+
+painel:
+	$(PYTHON) -m streamlit run app/streamlit_app.py
 
 testar:
 	pytest -m "not gemini" -v
