@@ -60,7 +60,7 @@ def test_motor_demo_sem_chave_bate_100_porcento_com_gabarito(
 
 
 def test_streamlit_app_executa_fluxo_completo_sem_excecoes(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Executa o painel Streamlit em modo headless e verifica todos os arquivos no rastreio."""
+    """Executa o painel Streamlit em modo headless, valida auto-carregamento, atalhos e rastreio."""
     from streamlit.testing.v1 import AppTest
 
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
@@ -68,15 +68,17 @@ def test_streamlit_app_executa_fluxo_completo_sem_excecoes(monkeypatch: pytest.M
     at.run()
     assert not at.exception
 
-    at.sidebar.select_slider[0].set_value("Instantâneo")
-    at.sidebar.button[0].click().run()
-    assert not at.exception
-
+    # Auto-carregamento na primeira abertura já exibe métricas completas
     metricas = {m.label: m.value for m in at.metric}
     assert metricas.get("Arquivos") == "17"
     assert metricas.get("✅ OK") == "13"
     assert metricas.get("⚠️ Revisar") == "3"
     assert metricas.get("❌ Falhou") == "1"
+
+    # Re-execução via botão da barra lateral no ritmo Instantâneo
+    at.sidebar.select_slider[0].set_value("Instantâneo")
+    at.sidebar.button[0].click().run()
+    assert not at.exception
 
     seletor = at.selectbox[0]
     for nome in (

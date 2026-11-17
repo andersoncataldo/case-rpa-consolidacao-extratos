@@ -1,5 +1,7 @@
 # Automação de Consolidação de Saldos Bancários — Documentação Executiva
 
+> **Painel interativo (Streamlit):** [https://case-rpa-consolidacao-extratos.streamlit.app/](https://case-rpa-consolidacao-extratos.streamlit.app/) — exibe visualmente todo o percurso da automação, reconciliação por extrato, documento original lado a lado e download da planilha/logs.
+
 ## 1. Fluxo da Automação
 
 ```

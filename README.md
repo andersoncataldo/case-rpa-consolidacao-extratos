@@ -1,5 +1,9 @@
 # RPA Extratos — Consolidação Automática de Saldos Bancários
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://case-rpa-consolidacao-extratos.streamlit.app/)
+
+> **🔗 Demonstração interativa online:** [https://case-rpa-consolidacao-extratos.streamlit.app/](https://case-rpa-consolidacao-extratos.streamlit.app/)
+
 Automação ponta a ponta em Python que lê extratos bancários em **PDF**, **Excel (`.xlsx`)** e **Imagem (`.png`)**, aplica reconciliação aritmética e validações de lote, gera a planilha consolidada no layout do modelo oficial (`saida/consolidado_AAAA-MM.xlsx`) e grava logs auditáveis em `.log` e `.json` (`logs/`).
 
 ## Arquitetura resumida

@@ -45,9 +45,9 @@ CSS = """
 .block-container {padding-top: 2rem; max-width: 1400px;}
 .hero h1 {font-size: 2rem; margin-bottom: 0;}
 .hero p {color:#475569; margin-top:.2rem;}
-.fluxo {display:flex; align-items:stretch; margin:.6rem 0 1rem;}
-.no {flex:1; background:#fff; border:2px solid #e2e8f0; border-radius:14px; padding:.75rem .5rem;
-     text-align:center; min-width:0; transition:all .35s ease;}
+.fluxo {display:flex; flex-wrap:wrap; gap:.35rem; align-items:stretch; margin:.6rem 0 1rem;}
+.no {flex:1 1 120px; background:#fff; border:2px solid #e2e8f0; border-radius:14px; padding:.75rem .5rem;
+     text-align:center; min-width:115px; transition:all .35s ease;}
 .no .ic {font-size:1.7rem; line-height:1.2;}
 .no .tt {font-weight:700; font-size:.92rem; color:#1e293b;}
 .no .tc {font-size:.7rem; color:#64748b; min-height:1.9em;}
@@ -69,9 +69,9 @@ CSS = """
 .badge {display:inline-block; padding:.1rem .6rem; border-radius:999px; font-size:.75rem; font-weight:700;}
 .b-ok {background:#C6EFCE; color:#006100;} .b-revisar {background:#FFEB9C; color:#9C6500;}
 .b-falhou {background:#FFC7CE; color:#9C0006;}
-.jornada {display:flex; align-items:stretch; margin:.4rem 0 1rem;}
-.passo {flex:1; background:#fff; border:1px solid #e2e8f0; border-left:5px solid #16a34a; border-radius:10px;
-        padding:.55rem .7rem; font-size:.8rem; color:#334155; min-width:0;}
+.jornada {display:flex; flex-wrap:wrap; gap:.35rem; align-items:stretch; margin:.4rem 0 1rem;}
+.passo {flex:1 1 140px; background:#fff; border:1px solid #e2e8f0; border-left:5px solid #16a34a; border-radius:10px;
+        padding:.55rem .7rem; font-size:.8rem; color:#334155; min-width:130px;}
 .passo b {display:block; font-size:.85rem; color:#0f172a; margin-bottom:.15rem;}
 .passo.revisar {border-left-color:#d97706;} .passo.falhou {border-left-color:#dc2626;}
 .recon {background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:.8rem 1rem; font-size:.92rem;}
@@ -658,10 +658,21 @@ def tabela_movimentos(r: Any, tolerancia: Decimal) -> None:
         return
     corrente = r.saldo_inicial or Decimal("0")
     linhas = []
+    status_linhas: list[str] = []
     serie = [{"Lançamento": 0, "Saldo": float(corrente)}]
     for i, m in enumerate(r.movimentos, start=1):
         corrente += m.valor
         divergente = m.saldo is not None and abs(corrente - m.saldo) > tolerancia
+        negativo = corrente < Decimal("0")
+        if divergente:
+            confere = "⚠️ Divergente"
+            status_linhas.append("divergente")
+        elif negativo:
+            confere = "🔻 Saldo negativo"
+            status_linhas.append("negativo")
+        else:
+            confere = "✓"
+            status_linhas.append("ok")
         linhas.append(
             {
                 "#": i,
@@ -670,32 +681,76 @@ def tabela_movimentos(r: Any, tolerancia: Decimal) -> None:
                 "Valor": brl(m.valor),
                 "Saldo calculado": brl(corrente),
                 "Saldo no extrato": brl(m.saldo) if m.saldo is not None else "—",
-                "Confere": "⚠️" if divergente else "✓",
+                "Status": confere,
             }
         )
         serie.append({"Lançamento": i, "Saldo": float(corrente)})
+    df_mov = pd.DataFrame(linhas)
+
+    def _estilo_linha(row: pd.Series) -> list[str]:
+        idx = int(row["#"]) - 1
+        tipo_l = status_linhas[idx] if 0 <= idx < len(status_linhas) else "ok"
+        if tipo_l == "divergente":
+            return ["background-color:#FFC7CE; color:#9C0006; font-weight:700"] * len(row)
+        if tipo_l == "negativo":
+            return ["background-color:#FFEB9C; color:#9C6500; font-weight:600"] * len(row)
+        return [""] * len(row)
+
     t1, t2 = st.tabs(["📋 Lançamentos", "📈 Evolução do saldo"])
     with t1:
-        st.dataframe(pd.DataFrame(linhas), hide_index=True, width="stretch", height=320)
+        st.dataframe(df_mov.style.apply(_estilo_linha, axis=1), hide_index=True, width="stretch", height=320)
     with t2:
         st.line_chart(pd.DataFrame(serie).set_index("Lançamento"), height=300)
         if min(s["Saldo"] for s in serie) < 0:
-            st.caption("O saldo ficou negativo em algum momento do período.")
+            st.caption("🔻 As linhas destacadas em amarelo indicam quando o saldo ficou negativo durante o período.")
+
+
+CASOS_DESTAQUE: list[tuple[str, str, str]] = [
+    ("🧮 Divergência R$ 1.080", "extrato_sol_do_sertao_I_out2026.pdf", "Saldo declarado difere da soma dos lançamentos"),
+    ("📉 Saldo negativo intradia", "cajueiro_solar_extrato_10-2026.xlsx", "Pagamento atípico de inversores deixou saldo negativo no mês"),
+    ("🗂️ Duplicata SHA-256", "EXT_102026_LagoaAzul (1).pdf", "Cópia idêntica detectada pelo hash SHA-256"),
+    ("📱 Print IA · Período/Conta", "print_serra_dourada_II.png", "Lido via Gemini Visão; período 2026-09 e conta de 7 dígitos"),
+    ("🚫 Não-extrato isolado", "aviso_agencia_horizonte.pdf", "Comunicado bancário isolado como 'falhou' sem parar o lote"),
+]
 
 
 def secao_rastreio(ex: Execucao) -> None:
     nomes = [a.nome for a in ex.arquivos]
     ordenados = sorted(nomes, key=str.lower)
-    padrao = next(
-        (i for i, a in enumerate(ex.arquivos) if a.resultado and a.resultado.status == "revisar"), 0
+    padrao_nome = next(
+        (a.nome for a in ex.arquivos if a.resultado and a.resultado.status == "revisar"),
+        nomes[0],
     )
+    if st.session_state.get("arquivo_rastreio") not in nomes:
+        st.session_state["arquivo_rastreio"] = padrao_nome
+
+    casos_disponiveis = [(rot, arq, desc) for rot, arq, desc in CASOS_DESTAQUE if arq in nomes]
+    if casos_disponiveis:
+        st.caption("⚡ **Atalhos para casos de destaque do lote** (clique para inspecionar):")
+        cols_atalho = st.columns(len(casos_disponiveis))
+        for col, (rot_caso, arq_caso, desc_caso) in zip(cols_atalho, casos_disponiveis):
+            ativo = st.session_state.get("arquivo_rastreio") == arq_caso
+            if col.button(
+                rot_caso,
+                key=f"atalho_{arq_caso}",
+                help=f"{arq_caso} — {desc_caso}",
+                type="primary" if ativo else "secondary",
+                width="stretch",
+            ):
+                st.session_state["arquivo_rastreio"] = arq_caso
+                st.rerun()
 
     def rotulo(n: str) -> str:
         a = next(x for x in ex.arquivos if x.nome == n)
         emoji = {"ok": "🟢", "revisar": "🟡", "falhou": "🔴"}.get(a.resultado.status if a.resultado else "", "⚪")
         return f"{emoji} {n}"
 
-    escolhido = st.selectbox("Escolha um extrato para acompanhar sua jornada", nomes, index=padrao, format_func=rotulo)
+    escolhido = st.selectbox(
+        "Escolha um extrato para acompanhar sua jornada",
+        nomes,
+        key="arquivo_rastreio",
+        format_func=rotulo,
+    )
     a = next(x for x in ex.arquivos if x.nome == escolhido)
     r = a.resultado
     st.markdown(html_jornada(a, ordenados.index(escolhido) + 2), unsafe_allow_html=True)
@@ -881,9 +936,32 @@ def cabecalho(ex: Execucao | None) -> None:
     c[5].metric("Modo", "Demonstração" if ex.modo == "demo" else "Ao vivo")
 
 
+def inicializar_demo_padrao() -> None:
+    """Pré-carrega o lote do case na primeira abertura para experiência imediata (zero-click)."""
+    if "execucao" in st.session_state:
+        return
+    entrada, trabalho = preparar_entrada("case", [])
+    eventos: list[tuple[str, str, str]] = []
+
+    def _registrar(etapa: str, msg: str, _dados: dict[str, Any]) -> None:
+        from datetime import datetime
+
+        eventos.append((datetime.now().strftime("%H:%M:%S"), etapa, msg))
+
+    st.session_state["execucao"] = motor.executar(
+        entrada,
+        trabalho,
+        modo="demo",
+        origem="case",
+        api_key=None,
+        ritmo_s=0.0,
+        on_evento=_registrar,
+    )
+    st.session_state["eventos"] = eventos
+
+
 def main() -> None:
     modo, origem, uploads, ritmo, chave, clicou = sidebar()
-    ex: Execucao | None = st.session_state.get("execucao")
 
     if clicou:
         cabecalho(None)
@@ -892,19 +970,29 @@ def main() -> None:
             rodar(modo, origem, uploads, ritmo, chave)
         st.rerun()
 
+    if "execucao" not in st.session_state:
+        with st.spinner("Carregando demonstração inicial do lote de extratos…"):
+            inicializar_demo_padrao()
+
+    ex: Execucao | None = st.session_state.get("execucao")
     cabecalho(ex)
-    st.markdown("### 🛤️ Percurso da automação")
+
+    col_tit, col_btn = st.columns([3, 1])
+    col_tit.markdown("### 🛤️ Percurso da automação")
+    pode_animar = origem == "case" or bool(uploads)
+    if col_btn.button(
+        "🎬 Reproduzir animação passo a passo",
+        width="stretch",
+        disabled=not pode_animar,
+        help="Executa novamente o pipeline acendendo cada etapa do diagrama em tempo real.",
+    ):
+        ritmo_anim = ritmo if ritmo > 0 else 0.12
+        with st.container(border=True):
+            rodar(modo, origem, uploads, ritmo_anim, chave)
+        st.rerun()
+
     if ex is None:
         st.markdown(html_fluxo(estado_inicial()), unsafe_allow_html=True)
-        st.info("Clique em **▶ Executar automação** na barra lateral para ver o fluxo acontecer, etapa por etapa.")
-        with st.expander("Como funciona", expanded=True):
-            st.markdown(
-                "1. **Descoberta** — varre a pasta de entrada e calcula o SHA-256 de cada arquivo.\n"
-                "2. **Classificação** — identifica formato e layout pelo conteúdo (nunca pelo nome).\n"
-                "3. **Extração** — Excel/PDF por regras determinísticas; prints de app via Gemini Visão.\n"
-                "4. **Validação** — reconciliação aritmética em `Decimal`, período do lote, padrão de conta, duplicidades.\n"
-                "5. **Consolidação** — planilha no layout do modelo oficial + logs `.log` e `.json` auditáveis."
-            )
         return
 
     st.markdown(html_fluxo(estado_final(ex)), unsafe_allow_html=True)
