@@ -37,7 +37,7 @@ O modelo padrão, tolerância de reconciliação e rótulos ficam em `config.yam
 
 ## Execução
 
-1. (Setup inicial dos dados do case) Extraia os 17 arquivos para `entrada/`:
+1. (Setup inicial dos dados de demonstração) Extraia os 17 extratos de amostra para `entrada/`:
 
    ```bash
    python scripts/preparar_entrada.py
@@ -66,7 +66,7 @@ O painel exibe:
 - **Dois modos de execução**:
   - **Demonstração**: processa PDFs e Excels de verdade e reaproveita as respostas do Gemini salvas em `demo/cache_gemini.json` para os prints de app (instantâneo, sem chave e sem custo).
   - **Ao vivo**: executa o pipeline 100% real incluindo chamadas à API do Google Gemini.
-- **Lote do case ou upload**: usa os 17 arquivos do case (extraindo `extratos_ufv_out2026.zip` automaticamente se `entrada/` não existir) ou permite enviar novos arquivos pela interface.
+- **Lote de demonstração ou upload**: usa os 17 extratos de amostra (extraindo `extratos_ufv_out2026.zip` automaticamente se `entrada/` não existir) ou permite enviar novos arquivos pela interface.
 - **Rastreio individual por arquivo**: documento original lado a lado com os dados extraídos, reconciliação aritmética detalhada (`saldo inicial + créditos − débitos = saldo final`) e evolução do saldo.
 - **Ganho de negócio (ROI)** e **download** da planilha consolidada (`.xlsx`) e dos logs (`.log` / `.json`).
 

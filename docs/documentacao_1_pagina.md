@@ -35,7 +35,7 @@ Premissas base para o fechamento mensal de **17 contas** (7 PDF + 5 PNG + 5 XLSX
 | **Total mensal** | **166 min (≈ 2,77 h/mês)** | **≈ 21,2 min (≈ 0,35 h/mês)** |
 
 - **Ganho líquido mensal (17 contas):** `166 − 21,2 = 144,8 min ≈ 2,4 h/mês` (**87% de redução de tempo**).
-- **Escala:** o ganho cresce linearmente com o portfólio de usinas — em **100 contas/mês**, o esforço manual saltaria para **≈ 14,5 h/mês**, enquanto a automação executa em poucos minutos e restringe o esforço humano às exceções (**≈ 1,5 h/mês**), economizando **≈ 13 h/mês** com trilha de auditoria SHA-256.
+- **Escala:** o ganho cresce linearmente com o volume de contas — em **100 contas/mês**, o esforço manual saltaria para **≈ 14,5 h/mês**, enquanto a automação executa em poucos minutos e restringe o esforço humano às exceções (**≈ 1,5 h/mês**), economizando **≈ 13 h/mês** com trilha de auditoria SHA-256.
 - **Custo medido de API (execução real):** **5 chamadas** (`gemini-3.5-flash` com fallback `gemini-3.6-flash` / `gemini-3.5-flash-lite`), **14.746 tokens** (`8.077` entrada + `6.669` saída/thinking), custo estimado de **US$ 0,031 por lote** (desprezível frente à hora técnica economizada). *(Os 12 PDFs/XLSX custam US$ 0,00 por serem 100% determinísticos em < 1 s.)*
 
 ## 4. Próximos Passos (Prioridade)

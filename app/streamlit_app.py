@@ -891,7 +891,7 @@ def sidebar() -> tuple[str, str, list[Any], float, str, bool]:
                 st.warning("Sem chave do Gemini: as imagens ficarão como 'falhou'.")
 
         st.markdown("---")
-        origem_label = st.radio("Arquivos de entrada", ["📁 Lote do case (outubro/2026)", "⬆️ Enviar meus arquivos"])
+        origem_label = st.radio("Arquivos de entrada", ["📁 Lote de demonstração (outubro/2026)", "⬆️ Enviar meus arquivos"])
         origem = "case" if origem_label.startswith("📁") else "upload"
         uploads: list[Any] = []
         if origem == "upload":
@@ -901,7 +901,7 @@ def sidebar() -> tuple[str, str, list[Any], float, str, bool]:
                 accept_multiple_files=True,
             ) or []
             if modo == "demo":
-                st.caption("No modo Demonstração, imagens novas (fora do lote do case) exigem o modo Ao vivo.")
+                st.caption("No modo Demonstração, imagens novas (fora do lote de amostra) exigem o modo Ao vivo.")
 
         st.markdown("---")
         ritmo_label = st.select_slider("Ritmo da animação", options=list(RITMOS), value="Normal")
